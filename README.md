@@ -20,44 +20,67 @@ exp1_boolean_min_tb.v	Verilog testbench
 exp1_boolean_min.vcd	VCD waveform dump generated during simulation
 
 ## Verilog Program
-module fun (
+module boolfun (
 input wire A, 
 input wire B, 
+input wire C, 
+input wire D, 
 output wire F 
 ); 
-assign F = (~A) | B ;    // F = A' + B 
+assign F = (~B & ~D)|(B & D) ;    // F = B'D' + BD 
 endmodule
+
 
 
 
 ## TestBench Program
-module tb;
-    reg A, B;
-    wire F;
-    // Instantiate the design under test (DUT)
-    fun uut (
-        .A(A),
-        .B(B),
-        .F(F)
-    );
+module boolfun_tb;
 
-    initial begin
-        // ---- VCD dump setup ----
-        $dumpfile("fun.vcd");   // name of the VCD file to be generated
-        $dumpvars(0, tb);   // dump all signals in this testbench hierarchy
+reg A, B, C, D;
+wire F;
 
-        // ---- Apply all 4 input combinations ----
-        $monitor("Time=%0t A=%b B=%b | F=%b", $time, A, B, F);
+boolfun uut (
+    .A(A),
+    .B(B),
+    .C(C),
+    .D(D),
+    .F(F)
+);
 
-        A = 0; B = 0; #10;
-        A = 0; B = 1; #10;
-        A = 1; B = 0; #10;
-        A = 1; B = 1; #10;
+initial begin
 
-        #10 $finish;
-    end
+    $dumpfile("boolfun.vcd");
+    $dumpvars(0, boolfun_tb);
+
+    $monitor("Time=%0t A=%b B=%b C=%b D=%b F=%b",
+              $time, A, B, C, D, F);
+
+    A=0; B=0; C=0; D=0; #10;
+    A=0; B=0; C=0; D=1; #10;
+    A=0; B=0; C=1; D=0; #10;
+    A=0; B=0; C=1; D=1; #10;
+
+    A=0; B=1; C=0; D=0; #10;
+    A=0; B=1; C=0; D=1; #10;
+    A=0; B=1; C=1; D=0; #10;
+    A=0; B=1; C=1; D=1; #10;
+
+    A=1; B=0; C=0; D=0; #10;
+    A=1; B=0; C=0; D=1; #10;
+    A=1; B=0; C=1; D=0; #10;
+    A=1; B=0; C=1; D=1; #10;
+
+    A=1; B=1; C=0; D=0; #10;
+    A=1; B=1; C=0; D=1; #10;
+    A=1; B=1; C=1; D=0; #10;
+    A=1; B=1; C=1; D=1; #10;
+
+    $finish;
+end
 
 endmodule
+
+    
 
 
 
@@ -119,7 +142,7 @@ and successfully implemented using Verilog HDL.
 
 ## OUTPUT
 
-<img width="1920" height="1080" alt="Screenshot (36)" src="https://github.com/user-attachments/assets/6c588660-10f8-49d5-9b16-83fc7444a770" />
+<img width="1920" height="1080" alt="Screenshot (55)" src="https://github.com/user-attachments/assets/46ee44c1-c0e9-4358-911d-9774c019367d" />
 
 
 The design was compiled and simulated using Synopsys VCS, and the functionality was verified using DVE waveform analysis.
